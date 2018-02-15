@@ -1,5 +1,5 @@
+tic
 %% clear the workspace and select data
-% clear; clc; close all;
 
 %% choose data
 neuron = Sources2D();
@@ -13,13 +13,13 @@ pars_envs = struct('memory_size_to_use', 8, ...   % GB, memory space you allow t
     'patch_dims', [64, 64]);  %GB, patch size
 
 % -------------------------      SPATIAL      -------------------------  %
-gSig = 3;           % pixel, gaussian width of a gaussian kernel for filtering the data. 0 means no filtering
-gSiz = 13;          % pixel, neuron diameter
+gSig = 5;           % pixel, gaussian width of a gaussian kernel for filtering the data. 0 means no filtering
+gSiz = 8;          % pixel, neuron diameter
 ssub = 1;           % spatial downsampling factor
-with_dendrites = true;   % with dendrites or not
+with_dendrites = false;   % with dendrites or not
 if with_dendrites
     % determine the search locations by dilating the current neuron shapes
-    updateA_search_method = 'dilate';  %#ok<UNRCH>
+    updateA_search_method = 'dilate';  % #ok<UNRCH>
     updateA_bSiz = 5;
     updateA_dist = neuron.options.dist;
 else
@@ -63,9 +63,9 @@ merge_thr_spatial = [0.8, 0.4, -inf];  % merge components with highly correlated
 % -------------------------  INITIALIZATION   -------------------------  %
 K = [];             % maximum number of neurons per patch. when K=[], take as many as possible.
 min_corr = 0.8;     % minimum local correlation for a seeding pixel
-min_pnr = 8;       % minimum peak-to-noise ratio for a seeding pixel
+min_pnr = 7;       % minimum peak-to-noise ratio for a seeding pixel
 min_pixel = gSig^2;      % minimum number of nonzero pixels for each neuron
-bd = 0;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
+bd = 1;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
 frame_range = [];   % when [], uses all frames
 save_initialization = false;    % save the initialization procedure as a video.
 use_parallel = true;    % use parallel computation for parallel computing
@@ -211,24 +211,41 @@ end
 %% save the workspace for future analysis
 neuron.orderROIs('snr');
 cnmfe_path = neuron.save_workspace();
-
+toc
 %% show neuron contours
 Coor = neuron.show_contours(0.6);
 
 
 %% create a video for displaying the
-amp_ac = 140;
-range_ac = 5+[0, amp_ac];
-multi_factor = 10;
-range_Y = 1300+[0, amp_ac*multi_factor];
-
-avi_filename = neuron.show_demixed_video(save_demixed, kt, [], amp_ac, range_ac, range_Y, multi_factor);
+% amp_ac = 140;
+% range_ac = 5+[0, amp_ac];
+% multi_factor = 10;
+% range_Y = 1300+[0, amp_ac*multi_factor];
+% 
+% avi_filename = neuron.show_demixed_video(save_demixed, kt, [], amp_ac, range_ac, range_Y, multi_factor);
 
 %% save neurons shapes
 neuron.save_neurons();
+toc
 
+%% Save analysis results
+% Create folder to save results
+folder_nm = [neuron.P.log_folder, 'analysis_results'];
+if ~exist('folder_nm', 'dir')
+    mkdir(folder_nm);
+end
 
+% Calculate SNR
+SNR_post_updates = var(neuron.C, 0, 2)./var(neuron.C_raw-neuron.C, 0, 2);
 
+h = figure;
+histogram(SNR_post_updates,0:0.25:20,'normalization','probability');
+
+title('SNR per cell');
+xlabel('SNR');
+ylabel('fraction');
+
+saveas(h, [folder_nm, '\SNR.tif'])
 
 
 
