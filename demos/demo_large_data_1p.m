@@ -1,6 +1,6 @@
 tic
 %% clear the workspace and select data
-
+clear all; close all;
 %% choose data
 neuron = Sources2D();
 nam = get_fullname('./data_1p.tif');          % this demo data is very small, here we just use it as an example
@@ -119,6 +119,8 @@ neuron.Fs = Fs;
 neuron.getReady(pars_envs);
 
 %% initialize neurons from the video data within a selected temporal range
+view_pnr_corr(neuron); % This function is addition of zivlab suplements, need to add to path if colopase 
+
 if choose_params
     % change parameters for optimized initialization
     [gSig, gSiz, ring_radius, min_corr, min_pnr] = neuron.set_parameters();
