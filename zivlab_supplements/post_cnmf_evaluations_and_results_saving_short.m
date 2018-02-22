@@ -1,14 +1,22 @@
-prompt = {'cage number:','mouse number:','experimental session:', 'microns per pixel'};
+
+prompt = {'microns per pixel'};
 
 dlg_title = 'please insert the following details';
 num_lines = 1;
 answer = inputdlg(prompt,dlg_title,num_lines);
 
-mouse_name=['C' answer{1} 'M' answer{2}]; %         try again- C67M3- 2.55  ; 3 10- C107m3- 2.6  % ?67?3- ???????
+%mouse_name=['C' answer{1} 'M' answer{2}]; %         try again- C67M3- 2.55  ; 3 10- C107m3- 2.6  % ?67?3- ???????
 
-session=answer{3};
-microns_per_pixel=str2double(answer{4});
+%session=answer{3};
+microns_per_pixel=str2double(answer{1});
 
+%% creating a stamp for the relevant parameters set
+gSig=neuron.options.gSig;
+gSiz=neuron.options.gSiz;
+min_corr=neuron.options.min_corr;
+min_pnr=neuron.options.min_pnr;
+
+parameters_stamp=[num2str(gSig) ' ' num2str(gSiz) ' ' num2str(min_corr) ' ' num2str(min_pnr)];
 
 %% neurons display option
 neurons_display_choice = menu('would you like to save the filters and traces visualization? ','Yes','No');
@@ -21,15 +29,10 @@ start_path='Z:\Short term data storage\Lab members';
 dialog_title='results folder';
 results_path = uigetdir(start_path,dialog_title);
 
-cd('E:\dev');
 
-mkdir(results_path, mouse_name);
+mkdir(results_path,  parameters_stamp);
 
-mkdir([results_path '\' mouse_name], parameters_stamp);
-
-mkdir([results_path '\' mouse_name '\' parameters_stamp], ['session_' session]);
-
-current_results_path=[results_path '\' mouse_name '\' parameters_stamp '\' 'session_' session '\'];
+current_results_path=[results_path,  parameters_stamp];
 
 
 %% display contours of the neurons
@@ -284,9 +287,7 @@ ylim([0 0.3]);
 xlabel('SNR');
 ylabel('probability');
 
-%% creating a stamp for the relevant parameters set
 
-parameters_stamp=[num2str(gSig) ' ' num2str(gSiz) ' ' num2str(min_corr) ' ' num2str(min_pnr)];
 %% results saving
 save([current_results_path 'finalFiltersMat.mat'],'finalFiltersMat','-v7.3');
 save([current_results_path 'finalTracesMat.mat'],'finalTracesMat','-v7.3');
