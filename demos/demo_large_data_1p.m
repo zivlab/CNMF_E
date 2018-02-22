@@ -59,7 +59,7 @@ merge_thr = 0.65;     % thresholds for merging neurons; [spatial overlap ratio, 
 method_dist = 'max';   % method for computing neuron distances {'mean', 'max'}
 dmin = 2; %was 5 in pc's code       % minimum distances between two neurons. it is used together with merge_thr
 dmin_only = 2;  % merge neurons if their distances are smaller than dmin_only.
-merge_thr_spatial = [1e-1, 0.85, 0]; %from PC code [0.8, 0.1, -inf];  % merge components with highly correlated spatial shapes (corr=0.8) and small temporal correlations (corr=0.1)
+merge_thr_spatial = [1e-1, 0.8, 0]; % in PC's code: [0.8, 0.4, -inf];  % merge components with highly correlated spatial shapes (corr=0.8) and small temporal correlations (corr=0.1)
 
 % -------------------------  INITIALIZATION   -------------------------  %
 K = [];             % maximum number of neurons per patch. when K=[], take as many as possible.
@@ -77,8 +77,9 @@ center_psf = true;  % set the value as true when the background fluctuation is l
 % set the value as false when the background fluctuation is small (2p)
 
 % -------------------------  Residual   -------------------------  %
-min_corr_res = 1; %was 0.7
-min_pnr_res = 400; %was 6
+
+min_corr_res = 1; %0.7
+min_pnr_res = 40; %6
 seed_method_res = 'auto';  % method for initializing neurons from the residual
 update_sn = true;
 
