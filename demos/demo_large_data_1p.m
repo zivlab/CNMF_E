@@ -1,3 +1,4 @@
+tic
 %% clear the workspace and select data
 clear; clc; close all;
 
@@ -19,7 +20,7 @@ ssub = 1;           % spatial downsampling factor
 with_dendrites = false;   % with dendrites or not
 if with_dendrites
     % determine the search locations by dilating the current neuron shapes
-    updateA_search_method = 'dilate';  %#ok<UNRCH>
+    updateA_search_method = 'dilate';  % #ok<UNRCH>
     updateA_bSiz = 5;
     updateA_dist = neuron.options.dist;
 else
@@ -62,10 +63,11 @@ merge_thr_spatial = [1e-1, 0.85, 0]; %from PC code [0.8, 0.1, -inf];  % merge co
 
 % -------------------------  INITIALIZATION   -------------------------  %
 K = [];             % maximum number of neurons per patch. when K=[], take as many as possible.
+
 min_corr = 0.7;     % minimum local correlation for a seeding pixel
 min_pnr = 8;       % minimum peak-to-noise ratio for a seeding pixel
 min_pixel = gSig^2;      % minimum number of nonzero pixels for each neuron
-bd = 0;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
+bd = 1;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
 frame_range = [];   % when [], uses all frames
 save_initialization = false;    % save the initialization procedure as a video.
 use_parallel = true;    % use parallel computation for parallel computing
@@ -119,6 +121,8 @@ neuron.Fs = Fs;
 neuron.getReady(pars_envs);
 
 %% initialize neurons from the video data within a selected temporal range
+view_pnr_corr(neuron); % This function is addition of zivlab suplements, need to add to path if colopase 
+
 if choose_params
     % change parameters for optimized initialization
     [gSig, gSiz, ring_radius, min_corr, min_pnr] = neuron.set_parameters();
@@ -211,25 +215,21 @@ end
 %% save the workspace for future analysis
 neuron.orderROIs('snr');
 cnmfe_path = neuron.save_workspace();
-
+toc
 %% show neuron contours
 Coor = neuron.show_contours(0.6);
 
-
-% %% create a video for displaying the
+%% create a video for displaying the
 % amp_ac = 140;
 % range_ac = 5+[0, amp_ac];
 % multi_factor = 10;
 % range_Y = 1300+[0, amp_ac*multi_factor];
 % 
 % avi_filename = neuron.show_demixed_video(save_demixed, kt, [], amp_ac, range_ac, range_Y, multi_factor);
-% 
-% %% save neurons shapes
-% neuron.save_neurons();
 
-
-
-
+%% save neurons shapes
+neuron.save_neurons();
+toc
 
 
 
