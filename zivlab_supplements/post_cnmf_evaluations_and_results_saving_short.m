@@ -19,7 +19,7 @@ min_pnr=neuron.options.min_pnr;
 parameters_stamp=[num2str(gSig) ' ' num2str(gSiz) ' ' num2str(min_corr) ' ' num2str(min_pnr)];
 
 %% neurons display option
-neurons_display_choice = menu('would you like to save the filters and traces visualization? ','Yes','No');
+neurons_display_choice = menu('would you like to save the filters and traces visualization per neuron? ','Yes','No');
 
 %% defining the folder in which the results wil be saved
 h = msgbox('please select the folder in which the results will be saved');
@@ -360,7 +360,7 @@ saveas(SNR_figure, fullfile(current_results_path, 'SNR.png'));
 
 %% display neurons
 
-if neurons_display_choice
+if neurons_display_choice==1
     mkdir(current_results_path, 'neurons');
     
     current_neurons_path=[current_results_path '\neurons'];
