@@ -5,7 +5,7 @@ gSiz = obj.options.gSiz;
 min_corr = obj.options.min_corr;
 min_pnr = obj.options.min_pnr;
 
-fprintf(['The current Values: \n (gSig, gSiz) = ', num2str([gSig, gSiz]), ...
+fprintf(['The current Values: \n (gSiz, gSig) = ', num2str([gSiz, gSig]), ...
     '\n(min_corr, min_pnr) = ', num2str([min_corr, min_pnr]), '\n']);
 
 %% Print the PNR and correlations for the current parametres
@@ -45,6 +45,8 @@ ylabel('PNR');
 xlabel('Cn');tmp_d = max(1,round(gSiz/4));
 v_max = ordfilt2(cn.*pnr, tmp_d^2, true(tmp_d));
 ind = (v_max==cn.*pnr);
+suptitle(['(gSiz, gSig) = ', num2str([gSiz, gSig]), ...
+                 ' (min corr, min pnr) = ', num2str([min_corr, min_pnr])])
 
 %% Insert changes and plot again
 
@@ -96,8 +98,8 @@ while strcmpi(temp, 'y')
             v_max = ordfilt2(cn.*pnr, tmp_d^2, true(tmp_d));
             ind = (v_max==cn.*pnr);
             
-            suptitle('(gSig, gSiz) = ', num2str([gSig, gSiz]), ...
-                 '\n(min_corr, min_pnr) = ', num2str([min_corr, min_pnr]))
+            suptitle(['(gSiz, gSig) = ', num2str([gSiz, gSig]), ...
+                 ' (min corr, min pnr) = ', num2str([min_corr, min_pnr])])
             
             temp1 = input('Do you want to change (gSiz, gSig)? (y/n)    ', 's');
         catch
@@ -145,8 +147,8 @@ while strcmpi(temp, 'y')
                 xlabel('Cn');tmp_d = max(1,round(gSiz/4));
                 v_max = ordfilt2(cn.*pnr, tmp_d^2, true(tmp_d));
                 ind = (v_max==cn.*pnr);
-                suptitle('(gSig, gSiz) = ', num2str([gSig, gSiz]), ...
-                 '\n(min_corr, min_pnr) = ', num2str([min_corr, min_pnr]))
+                suptitle(['(gSiz, gSig) = ', num2str([gSiz, gSig]), ...
+                 ' (min corr, min pnr) = ', num2str([min_corr, min_pnr])])
                 
                 temp1 = input('Do you want to set new values for (min_corr, min_pnr)? (y/n)   ', 's');
                 if strcmpi(temp1, 'n')
