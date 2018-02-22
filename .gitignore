@@ -20,3 +20,4 @@ deconvolveCa/MCMC*
 demos/temp
 
 *.asv
+*.ps
