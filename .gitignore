@@ -1,4 +1,6 @@
 *.mat
+*.asv
+
 cvx/
 *.avi
 *.m~
