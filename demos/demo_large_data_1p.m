@@ -227,10 +227,10 @@ Coor = neuron.show_contours(0.6);
 % 
 % avi_filename = neuron.show_demixed_video(save_demixed, kt, [], amp_ac, range_ac, range_Y, multi_factor);
 
-%% save neurons shapes
-neuron.save_neurons();
-toc
-
+% %% save neurons shapes
+% neuron.save_neurons();
+% toc
+% 
 
 
 
