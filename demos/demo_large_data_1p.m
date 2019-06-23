@@ -9,8 +9,8 @@ nam = neuron.select_data(nam);  %if nam is [], then select data interactively
 
 %% parameters
 % -------------------------    COMPUTATION    -------------------------  %
-pars_envs = struct('memory_size_to_use', 20, ...   % GB, memory space you allow to use in MATLAB %was 8
-    'memory_size_per_patch', 0.8, ...   % GB, space for loading data within one patch %was 0.6
+pars_envs = struct('memory_size_to_use', 16, ...   % GB, memory space you allow to use in MATLAB %was 8
+    'memory_size_per_patch', 1.7, ...   % GB, space for loading data within one patch %was 0.6
     'patch_dims', [64, 64]);  %GB, patch size
 
 % -------------------------      SPATIAL      -------------------------  %
@@ -59,20 +59,20 @@ merge_thr = 0.65;     % thresholds for merging neurons; [spatial overlap ratio, 
 method_dist = 'max';   % method for computing neuron distances {'mean', 'max'}
 dmin = 2; %was 5 in pc's code       % minimum distances between two neurons. it is used together with merge_thr
 dmin_only = 2;  % merge neurons if their distances are smaller than dmin_only.
-merge_thr_spatial = [0.8, 0.6, 0]; % in PC's code: [0.8, 0.4, -inf];  % merge components with highly correlated spatial shapes (corr=0.8) and small temporal correlations (corr=0.1)
+merge_thr_spatial = [0.8, 0.6, 0]; % in PC's code: [0.8, 0.4, -inf];  % merge components with highly correlated spatial shapes (corr=0.8) and small temporal correlations (corr=0.1) % [0.8, 0.6, 0]
 
 % -------------------------  INITIALIZATION   -------------------------  %
 K = [];             % maximum number of neurons per patch. when K=[], take as many as possible.
 
-min_corr = 0.7;     % minimum local correlation for a seeding pixel
-min_pnr = 8;       % minimum peak-to-noise ratio for a seeding pixel
+min_corr = 0.75;     % minimum local correlation for a seeding pixel
+min_pnr =7;       % minimum peak-to-noise ratio for a seeding pixel
 min_pixel = gSig^2;      % minimum number of nonzero pixels for each neuron
-bd = 1;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
+bd = 0;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
 frame_range = [];   % when [], uses all frames
 save_initialization = false;    % save the initialization procedure as a video.
 use_parallel = true;    % use parallel computation for parallel computing
 show_init = true;   % show initialization results
-choose_params = true; % manually choose parameters
+choose_params = false; % manually choose parameters
 center_psf = true;  % set the value as true when the background fluctuation is large (usually 1p data)
 % set the value as false when the background fluctuation is small (2p)
 
@@ -230,7 +230,7 @@ Coor = neuron.show_contours(0.6);
 
 % %% save neurons shapes
 % neuron.save_neurons();
-% toc
+toc
 % 
 
 

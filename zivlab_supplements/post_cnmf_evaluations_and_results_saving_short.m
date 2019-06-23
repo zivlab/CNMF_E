@@ -1,14 +1,22 @@
-prompt = {'cage number:','mouse number:','experimental session:', 'microns per pixel'};
+
+prompt = {'microns per pixel'};
 
 dlg_title = 'please insert the following details';
 num_lines = 1;
 answer = inputdlg(prompt,dlg_title,num_lines);
 
-mouse_name=['C' answer{1} 'M' answer{2}]; %         try again- C67M3- 2.55  ; 3 10- C107m3- 2.6  % ?67?3- ???????
+%mouse_name=['C' answer{1} 'M' answer{2}]; %         try again- C67M3- 2.55  ; 3 10- C107m3- 2.6  % ?67?3- ???????
 
-session=answer{3};
-microns_per_pixel=str2double(answer{4});
+%session=answer{3};
+microns_per_pixel=str2double(answer{1});
 
+%% creating a stamp for the relevant parameters set
+gSig=neuron.options.gSig;
+gSiz=neuron.options.gSiz;
+min_corr=neuron.options.min_corr;
+min_pnr=neuron.options.min_pnr;
+
+parameters_stamp=[num2str(gSig) ' ' num2str(gSiz) ' ' num2str(min_corr) ' ' num2str(min_pnr)];
 
 %% neurons display option
 neurons_display_choice = menu('would you like to save the filters and traces visualization? ','Yes','No');
@@ -21,15 +29,10 @@ start_path='Z:\Short term data storage\Lab members';
 dialog_title='results folder';
 results_path = uigetdir(start_path,dialog_title);
 
-cd('E:\dev');
 
-mkdir(results_path, mouse_name);
+mkdir(results_path,  parameters_stamp);
 
-mkdir([results_path '\' mouse_name], parameters_stamp);
-
-mkdir([results_path '\' mouse_name '\' parameters_stamp], ['session_' session]);
-
-current_results_path=[results_path '\' mouse_name '\' parameters_stamp '\' 'session_' session '\'];
+current_results_path=fullfile(results_path,  parameters_stamp);
 
 
 %% display contours of the neurons
@@ -39,8 +42,8 @@ neuron.show_contours(0.6);
 colormap gray;
 title(['contours of estimated neurons (' num2str(size(neuron.A,2)) ' neurons)']);
 
-saveas(gcf,[current_results_path 'all_contours.fig']);
-saveas(gcf,[current_results_path 'all_contours.png']);
+saveas(gcf,fullfile(current_results_path , 'all_contours.fig'));
+saveas(gcf,fullfile(current_results_path , 'all_contours.png'));
 
 %% creating correlation and PNR image
 
@@ -88,7 +91,6 @@ for n=1:number_of_cells
     
 end
 
-%%
 
 %% Shape sorting from preprocessing GUI
 
@@ -253,20 +255,22 @@ joint_pixels_measure_with_others=joint_pixels_measure;
 joint_pixels_measure_with_others(~~eye(size(joint_pixels_measure)))=NaN;
 
 
-joint_pixels_figure=figure('units','normalized','outerposition',[0 0 1 1]);
+joint_pixels_figure=figure('units','normalized','outerposition',[0.1 0.1 0.6 0.6]);
 subplot(1,2,1)
 histogram(joint_pixels_measure_with_others(joint_pixels_measure_with_others>0),0:0.01:1,'normalization','probability');
-ylabel('number of cells');
+ylabel('fraction of cells');
 xlabel('overlap');
 ylim([0 0.5]);
+xlim([0 1]);
 
 title('joint pixels distribution (given overlap>0)');
 
 subplot(1,2,2)
 histogram(joint_pixels_measure_with_others(joint_pixels_measure_with_others>0.5),0.7:0.01:1,'normalization','probability');
-ylabel('number of cells');
+ylabel('fraction of cells');
 xlabel('overlap');
 ylim([0 0.4]);
+xlim([0.7 1]);
 
 title('joint pixels distribution(given overlap>0.7)');
 suptitle('joint pixels estimation');
@@ -283,15 +287,13 @@ histogram(SNR_post_updates,0:0.25:20,'normalization','probability');
 ylim([0 0.3]);
 xlabel('SNR');
 ylabel('probability');
+title('SNR per cell distribution');
 
-%% creating a stamp for the relevant parameters set
-
-parameters_stamp=[num2str(gSig) ' ' num2str(gSiz) ' ' num2str(min_corr) ' ' num2str(min_pnr)];
 %% results saving
-save([current_results_path 'finalFiltersMat.mat'],'finalFiltersMat','-v7.3');
-save([current_results_path 'finalTracesMat.mat'],'finalTracesMat','-v7.3');
-save([current_results_path 'finalSpikesMat.mat'],'finalSpikesMat','-v7.3');
-save([current_results_path 'finalNeuronsCenters.mat'],'finalNeuronsCenters','-v7.3');
+save(fullfile(current_results_path, 'finalFiltersMat.mat'),'finalFiltersMat','-v7.3');
+save(fullfile(current_results_path, 'finalTracesMat.mat'),'finalTracesMat','-v7.3');
+save(fullfile(current_results_path, 'finalSpikesMat.mat'),'finalSpikesMat','-v7.3');
+save(fullfile(current_results_path, 'finalNeuronsCenters.mat'),'finalNeuronsCenters','-v7.3');
 
 
 
@@ -309,16 +311,13 @@ results.Cn=neuron.Cn;
 results.P=neuron.P;
 results.options=neuron.options;
 
-results.video_file_name=nam;
+%results.video_file_name=nam;
 
 
 parameters.with_dendrites=with_dendrites;
 
-results.merge_thr_spatial=merge_thr_spatial;
 
-results.min_pixel=min_pixel;
-results.min_pnr=min_pnr;
-results.min_corr=min_corr;
+
 %results.Nspatial=Nspatial;
 %results.maxIter=maxIter;
 %results.additional_search_flag=additional_search_flag;
@@ -331,28 +330,37 @@ results.noise_estimation=noise_estimation;
 results.SNR_post_updates=SNR_post_updates;
 
 
-save([current_results_path 'results.mat'],'results','-v7.3');
 
-%% with hadas- choosing spesific figures
+%results.merge_thr_spatial=merge_thr_spatial;  % this variable can be saves
+%when the CNMF results are in the workspace after running
 
-saveas(correlation_and_pnr_figure, [current_results_path 'correlation_and_pnr.fig']);
-saveas(correlation_and_pnr_figure, [current_results_path 'correlation_and_pnr.png']);
+%results.min_pixel=min_pixel; % this variable can be saves
+%when the CNMF results are in the workspace after running
 
-saveas(shape_sorting_figure, [current_results_path 'shape_sorting.fig']);
-saveas(shape_sorting_figure, [current_results_path 'shape_sorting.png']);
+%%
 
-saveas(joint_pixels_figure, [current_results_path 'joint_pixels.fig']);
-saveas(joint_pixels_figure, [current_results_path 'joint_pixels.png']);
+save(fullfile(current_results_path, 'results.mat'),'results','-v7.3');
 
-saveas(SNR_figure, [current_results_path 'SNR.fig']);
-saveas(SNR_figure, [current_results_path 'SNR.png']);
+%% saving figures
+
+saveas(correlation_and_pnr_figure, fullfile(current_results_path, 'correlation_and_pnr.fig'));
+saveas(correlation_and_pnr_figure, fullfile(current_results_path, 'correlation_and_pnr.png'));
+
+saveas(shape_sorting_figure, fullfile(current_results_path, 'shape_sorting.fig'));
+saveas(shape_sorting_figure, fullfile(current_results_path, 'shape_sorting.png'));
+
+saveas(joint_pixels_figure, fullfile(current_results_path, 'joint_pixels.fig'));
+saveas(joint_pixels_figure, fullfile(current_results_path, 'joint_pixels.png'));
+
+saveas(SNR_figure, fullfile(current_results_path, 'SNR.fig'));
+saveas(SNR_figure, fullfile(current_results_path, 'SNR.png'));
 
 
 
 %% display neurons
 
-if neurons_display_choice
-    mkdir(current_results_path, ['neurons- session ' session]);
+if neurons_display_choice==1
+    mkdir(current_results_path, 'neurons');
     
     current_neurons_path=[current_results_path '\neurons'];
     
