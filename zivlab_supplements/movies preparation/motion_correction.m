@@ -1,4 +1,5 @@
-function motion_correction(input_filenames, saving_filename)
+function motion_correction(input_filenames, saving_filename, ...
+                           preprocess_flag, trim_flag)
 % This function  preformes concatenatination, motion correction and cropping
 % for the neuronal videos trough mosaic. It is suitible for Bambi movies,
 % but trough changing filenames can work with other movies found in the
@@ -15,12 +16,30 @@ meanSubtraction = true;
 mosaic_movies = cell(1, length(input_filenames));
 for i=1:length(input_filenames)
     mosaic_movies{i} = mosaic.loadMovieTiff(input_filenames{i});
+    
+end
+%% Trim movies
+if trim_flag
+    trimmed_movies = cell(1, length(input_filenames));
+    for i=1:length(input_filenames)
+        % 7000 is some arbitrary number for the number of frames in trial
+        trimmed_movies{i} = mosaic.trimMovie(mosaic_movies{i}, 2, 7000);
+    end
+    mosaic_movies = trimmed_movies;
 end
 
 %% Concatenate movies
-movies_list = mosaic.List('mosaic.Movie', mosaic_movies);
-mosaic_movie = mosaic.concatenateMovies(movies_list, 'gapTime', 0);
+if length(mosaic_movies) > 1
+    movies_list = mosaic.List('mosaic.Movie', mosaic_movies);
+    mosaic_movie = mosaic.concatenateMovies(movies_list, 'gapTime', 0);
+else
+    mosaic_movie = mosaic_movies{1};
+end
 
+%% Preprocess movie
+if preprocess_flag
+    mosaic_movie = mosaic.preprocessMovie(mosaic_movie, 'spatialDownsampleFactor', 1);
+end
 %% Choose roi for motion correction
 msgbox('close figure for choosinf ROI');
 tissueRoi = mosaic.EllipseRoi(mosaic.Point(200, 110), mosaic.Point(50, 70));
