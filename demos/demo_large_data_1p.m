@@ -13,7 +13,7 @@ pars_envs = struct('memory_size_to_use', 8, ...   % GB, memory space you allow t
     'patch_dims', [64, 64]);  %GB, patch size
 
 % -------------------------      SPATIAL      -------------------------  %
-gSig = 5;           % pixel, gaussian width of a gaussian kernel for filtering the data. 0 means no filtering
+gSig = 3;           % pixel, gaussian width of a gaussian kernel for filtering the data. 0 means no filtering
 gSiz = 8;          % pixel, neuron diameter
 ssub = 1;           % spatial downsampling factor
 with_dendrites = false;   % with dendrites or not
@@ -63,7 +63,7 @@ merge_thr_spatial = [0.8, 0.4, -inf];  % merge components with highly correlated
 % -------------------------  INITIALIZATION   -------------------------  %
 K = [];             % maximum number of neurons per patch. when K=[], take as many as possible.
 min_corr = 0.8;     % minimum local correlation for a seeding pixel
-min_pnr = 7;       % minimum peak-to-noise ratio for a seeding pixel
+min_pnr = 8;       % minimum peak-to-noise ratio for a seeding pixel
 min_pixel = gSig^2;      % minimum number of nonzero pixels for each neuron
 bd = 1;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
 frame_range = [];   % when [], uses all frames
