@@ -1,4 +1,6 @@
 *.mat
+*.asv
+
 cvx/
 *.avi
 *.m~
@@ -18,5 +20,6 @@ deconvolveCa/constrained-foopsi*
 deconvolveCa/MCMC*
 
 demos/temp
+demos/demo_large_data_1p.m
 
-*.asv
+*.ps

@@ -1,15 +1,16 @@
 tic
 %% clear the workspace and select data
-clear all; close all;
+clear; clc; close all;
+
 %% choose data
 neuron = Sources2D();
-nam = get_fullname('./data_1p.tif');          % this demo data is very small, here we just use it as an example
+nam = [];          % this demo data is very small, here we just use it as an example
 nam = neuron.select_data(nam);  %if nam is [], then select data interactively
 
 %% parameters
 % -------------------------    COMPUTATION    -------------------------  %
-pars_envs = struct('memory_size_to_use', 8, ...   % GB, memory space you allow to use in MATLAB
-    'memory_size_per_patch', 0.6, ...   % GB, space for loading data within one patch
+pars_envs = struct('memory_size_to_use', 20, ...   % GB, memory space you allow to use in MATLAB %was 8
+    'memory_size_per_patch', 0.8, ...   % GB, space for loading data within one patch %was 0.6
     'patch_dims', [64, 64]);  %GB, patch size
 
 % -------------------------      SPATIAL      -------------------------  %
@@ -56,9 +57,9 @@ num_neighbors = []; % number of neighbors for each neuron
 show_merge = false;  % if true, manually verify the merging step
 merge_thr = 0.65;     % thresholds for merging neurons; [spatial overlap ratio, temporal correlation of calcium traces, spike correlation]
 method_dist = 'max';   % method for computing neuron distances {'mean', 'max'}
-dmin = 5;       % minimum distances between two neurons. it is used together with merge_thr
+dmin = 2; %was 5 in pc's code       % minimum distances between two neurons. it is used together with merge_thr
 dmin_only = 2;  % merge neurons if their distances are smaller than dmin_only.
-merge_thr_spatial = [0.8, 0.4, -inf];  % merge components with highly correlated spatial shapes (corr=0.8) and small temporal correlations (corr=0.1)
+merge_thr_spatial = [1e-1, 0.8, 0]; % in PC's code: [0.8, 0.4, -inf];  % merge components with highly correlated spatial shapes (corr=0.8) and small temporal correlations (corr=0.1)
 
 % -------------------------  INITIALIZATION   -------------------------  %
 K = [];             % maximum number of neurons per patch. when K=[], take as many as possible.
@@ -75,8 +76,9 @@ center_psf = true;  % set the value as true when the background fluctuation is l
 % set the value as false when the background fluctuation is small (2p)
 
 % -------------------------  Residual   -------------------------  %
-min_corr_res = 0.7;
-min_pnr_res = 6;
+
+min_corr_res = 1; %0.7
+min_pnr_res = 40; %6
 seed_method_res = 'auto';  % method for initializing neurons from the residual
 update_sn = true;
 
@@ -217,7 +219,6 @@ toc
 %% show neuron contours
 Coor = neuron.show_contours(0.6);
 
-
 %% create a video for displaying the
 % amp_ac = 140;
 % range_ac = 5+[0, amp_ac];
@@ -226,40 +227,7 @@ Coor = neuron.show_contours(0.6);
 % 
 % avi_filename = neuron.show_demixed_video(save_demixed, kt, [], amp_ac, range_ac, range_Y, multi_factor);
 
-%% save neurons shapes
-neuron.save_neurons();
-toc
-
-%% Save analysis results
-% Create folder to save results
-folder_nm = [neuron.P.log_folder, 'analysis_results'];
-if ~exist('folder_nm', 'dir')
-    mkdir(folder_nm);
-end
-
-% Calculate SNR
-SNR_post_updates = var(neuron.C, 0, 2)./var(neuron.C_raw-neuron.C, 0, 2);
-
-h = figure;
-histogram(SNR_post_updates,0:0.25:20,'normalization','probability');
-
-title('SNR per cell');
-xlabel('SNR');
-ylabel('fraction');
-
-saveas(h, [folder_nm, '\SNR.tif'])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% %% save neurons shapes
+% neuron.save_neurons();
+% toc
+% 
