@@ -1,5 +1,5 @@
 function motion_correction(input_filenames, saving_filename, ...
-                           preprocess_flag, trim_flag)
+                           saving_log_filename, preprocess_flag, trim_flag)
 % This function  preformes concatenatination, motion correction and cropping
 % for the neuronal videos trough mosaic. It is suitible for Bambi movies,
 % but trough changing filenames can work with other movies found in the
@@ -64,4 +64,12 @@ cropped_movie.view()
 
 %% Save results
 mosaic.saveMovieTiff(cropped_movie,saving_filename);
+
+fileID = fopen(saving_log_filename,'w');
+% TODO: find a way to change the parameters of the frame size. the
+% parameteres here are the defult ones for recording at downsampling of 4
+fprintf(fileID, 'Downsampled frame size - 360,270 [pixels]\n');
+fprintf(fileID,'Cropping coordinates - %i,%i,%i,%i [pixels]\n', position);
+fprintf(fileID,'Spatial downsampling - 1\n');
+fclose(fileID);
 end
