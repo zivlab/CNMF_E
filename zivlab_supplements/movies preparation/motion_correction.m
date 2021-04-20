@@ -1,5 +1,5 @@
 function motion_correction(input_filenames, saving_filename, ...
-                           saving_log_filename, preprocess_flag, trim_flag)
+                           saving_log_filename, preprocess_flag, trim_flag, cropping_coordinates)
 % This function  preformes concatenatination, motion correction and cropping
 % for the neuronal videos trough mosaic. It is suitible for Bambi movies,
 % but trough changing filenames can work with other movies found in the
@@ -52,13 +52,14 @@ tissueRoi.edit(mosaic_movie);
     'subtractSpatialMean', meanSubtraction,'applySpatialMean', applyMeanFilter);
 
 %% Crop movie
-tifMovie_Registered.view()
-frame1 = mosaic.extractFrame(tifMovie_Registered, 'frame', 1);
-msgbox('Dubble click the ROI for chossing area for cropping')
-frame1.view()
-h = imrect;
-position = round(wait(h));
+% tifMovie_Registered.view()
+% frame1 = mosaic.extractFrame(tifMovie_Registered, 'frame', 1);
+% msgbox('Dubble click the ROI for chossing area for cropping')
+% frame1.view()
+% h = imrect;
+% position = round(wait(h));
 
+position = cropping_coordinates;
 cropped_movie = mosaic.cropMovie(tifMovie_Registered, position(1),position(2),position(3)+position(1),position(4)+position(2));
 cropped_movie.view()
 

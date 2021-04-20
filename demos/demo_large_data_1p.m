@@ -9,8 +9,8 @@ nam = neuron.select_data(nam);  %if nam is [], then select data interactively
 
 %% parameters
 % -------------------------    COMPUTATION    -------------------------  %
-pars_envs = struct('memory_size_to_use', 20, ...   % GB, memory space you allow to use in MATLAB %was 8
-    'memory_size_per_patch', 0.8, ...   % GB, space for loading data within one patch %was 0.6
+pars_envs = struct('memory_size_to_use', 50, ...   % GB, memory space you allow to use in MATLAB %was 8
+    'memory_size_per_patch', 5, ...   % GB, space for loading data within one patch %was 0.6
     'patch_dims', [64, 64]);  %GB, patch size
 
 % -------------------------      SPATIAL      -------------------------  %
@@ -34,7 +34,7 @@ spatial_algorithm = 'hals_thresh';
 
 % -------------------------      TEMPORAL     -------------------------  %
 Fs = 10;             % frame rate
-tsub = 1;           % temporal downsampling factor
+tsub = 2;           % temporal downsampling factor
 deconv_options = struct('type', 'ar1', ... % model of the calcium traces. {'ar1', 'ar2'}
     'method', 'foopsi', ... % method for running deconvolution {'foopsi', 'constrained', 'thresholded'}
     'smin', -5, ...         % minimum spike size. When the value is negative, the actual threshold is abs(smin)*noise level
@@ -64,7 +64,7 @@ merge_thr_spatial = [1e-1, 0.8, 0]; % in PC's code: [0.8, 0.4, -inf];  % merge c
 % -------------------------  INITIALIZATION   -------------------------  %
 K = [];             % maximum number of neurons per patch. when K=[], take as many as possible.
 
-min_corr = 0.7;     % minimum local correlation for a seeding pixel
+min_corr = 0.85;     % minimum local correlation for a seeding pixel
 min_pnr = 8;       % minimum peak-to-noise ratio for a seeding pixel
 min_pixel = gSig^2;      % minimum number of nonzero pixels for each neuron
 bd = 1;             % number of rows/columns to be ignored in the boundary (mainly for motion corrected data)
@@ -232,16 +232,3 @@ Coor = neuron.show_contours(0.6);
 % neuron.save_neurons();
 % toc
 % 
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -359,7 +359,6 @@ saveas(SNR_figure, fullfile(current_results_path, 'SNR.png'));
 
 
 %% display neurons
-
 if neurons_display_choice==1
     mkdir(current_results_path, 'neurons');
     
